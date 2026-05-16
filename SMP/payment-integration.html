@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialFlow Pro - Payment Integration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --primary-light: #7c3aed;
+            --secondary: #f093fb;
+            --accent: #4facfe;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1a202c;
+            --light: #f7fafc;
+            --gray: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            overflow: hidden;
+        }
+
+        .bg-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            animation: bgMove 20s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-20px, -20px) scale(1.05); }
+            50% { transform: translate(20px, -10px) scale(0.95); }
+            75% { transform: translate(-10px, 20px) scale(1.02); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 20px rgba(102, 126, 234, 0.3)); }
+            50% { filter: brightness(1.2) drop-shadow(0 0 30px rgba(102, 126, 234, 0.5)); }
+        }
+
+        .logo i {
+            font-size: 36px;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-outline:hover {
+            background: var(--gradient-1);
+            color: white;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Pricing Cards */
+        .pricing-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-3);
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .pricing-title {
+            font-size: 40px;
+            font-weight: 800;
+            color: var(--dark);
+            background: var(--gradient-3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .pricing-subtitle {
+            font-size: 20px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .pricing-card {
+            background: linear-gradient(135deg, rgba(247, 250, 252, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%);
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            right: 30px;
+            background: var(--gradient-4);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .plan-name {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .plan-price {
+            font-size: 48px;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .plan-price span {
+            font-size: 18px;
+            color: var(--gray);
+            font-weight: 400;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 30px 0;
+        }
+
+        .plan-features li {
+            padding: 12px 0;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .plan-features i {
+            color: var(--success);
+            font-size: 16px;
+        }
+
+        /* Payment Form */
+        .payment-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-2);
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .payment-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--dark);
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .payment-subtitle {
+            font-size: 18px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .payment-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 16px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .card-element {
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card-element:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+
+        .payment-method {
+            padding: 12px 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .payment-method.active {
+            border-color: var(--primary);
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .payment-method i {
+            font-size: 20px;
+        }
+
+        /* Success Message */
+        .success-message {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95) 0%, rgba(34, 197, 94, 0.95) 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
+            z-index: 2000;
+            display: none;
+            animation: slideInRight 0.5s ease;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-spinner.show {
+            display: block;
+        }
+
+        /* Order Summary */
+        .order-summary {
+            background: linear-gradient(135deg, rgba(247, 250, 252, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .order-summary h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--primary);
+            padding-top: 20px;
+        }
+
+        .order-label {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .order-value {
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 25px;
+                padding: 25px;
+            }
+
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-methods {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-particles"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-credit-card"></i>
+                <span>SocialFlow Pro</span>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-outline" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to App
+                </button>
+                <button class="btn btn-primary" onclick="showSupport()">
+                    <i class="fas fa-headset"></i>
+                    Support
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Pricing Section -->
+            <section class="pricing-section">
+                <div class="pricing-header">
+                    <h2 class="pricing-title">💰 Choose Your Plan</h2>
+                    <p class="pricing-subtitle">Start free, upgrade when you're ready</p>
+                </div>
+                <div class="pricing-grid">
+                    <div class="pricing-card" onclick="selectPlan('starter')">
+                        <h3 class="plan-name">Starter</h3>
+                        <div class="plan-price">$9<span>/month</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> 3 Social Accounts</li>
+                            <li><i class="fas fa-check"></i> 50 Posts/month</li>
+                            <li><i class="fas fa-check"></i> Basic Analytics</li>
+                            <li><i class="fas fa-check"></i> Email Support</li>
+                        </ul>
+                        <button class="btn btn-outline" style="width: 100%;">
+                            Select Plan
+                        </button>
+                    </div>
+                    <div class="pricing-card featured" onclick="selectPlan('professional')">
+                        <div class="pricing-badge">MOST POPULAR</div>
+                        <h3 class="plan-name">Professional</h3>
+                        <div class="plan-price">$19<span>/month</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> 10 Social Accounts</li>
+                            <li><i class="fas fa-check"></i> 500 Posts/month</li>
+                            <li><i class="fas fa-check"></i> Advanced Analytics</li>
+                            <li><i class="fas fa-check"></i> AI Content Suggestions</li>
+                            <li><i class="fas fa-check"></i> Priority Support</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;">
+                            Select Plan
+                        </button>
+                    </div>
+                    <div class="pricing-card" onclick="selectPlan('enterprise')">
+                        <h3 class="plan-name">Enterprise</h3>
+                        <div class="plan-price">$39<span>/month</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Unlimited Accounts</li>
+                            <li><i class="fas fa-check"></i> Unlimited Posts</li>
+                            <li><i class="fas fa-check"></i> Custom Analytics</li>
+                            <li><i class="fas fa-check"></i> AI Content Generation</li>
+                            <li><i class="fas fa-check"></i> API Access</li>
+                            <li><i class="fas fa-check"></i> Phone Support</li>
+                        </ul>
+                        <button class="btn btn-outline" style="width: 100%;">
+                            Select Plan
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Payment Section -->
+            <section class="payment-section">
+                <div class="payment-header">
+                    <h2 class="payment-title">💳 Complete Your Purchase</h2>
+                    <p class="payment-subtitle">Secure payment powered by Stripe</p>
+                </div>
+
+                <div class="order-summary">
+                    <h3>Order Summary</h3>
+                    <div class="order-item">
+                        <span class="order-label">Plan:</span>
+                        <span class="order-value" id="selectedPlan">Professional</span>
+                    </div>
+                    <div class="order-item">
+                        <span class="order-label">Price:</span>
+                        <span class="order-value" id="planPrice">$19.00</span>
+                    </div>
+                    <div class="order-item">
+                        <span class="order-label">Billing Cycle:</span>
+                        <span class="order-value">Monthly</span>
+                    </div>
+                    <div class="order-item">
+                        <span class="order-label">Tax:</span>
+                        <span class="order-value">$1.90</span>
+                    </div>
+                    <div class="order-item">
+                        <span class="order-label">Total:</span>
+                        <span class="order-value" id="totalPrice">$20.90</span>
+                    </div>
+                </div>
+
+                <form class="payment-form" id="paymentForm">
+                    <div class="payment-methods">
+                        <div class="payment-method active" onclick="selectPaymentMethod('card')">
+                            <i class="fas fa-credit-card"></i>
+                            Card
+                        </div>
+                        <div class="payment-method" onclick="selectPaymentMethod('paypal')">
+                            <i class="fab fa-paypal"></i>
+                            PayPal
+                        </div>
+                        <div class="payment-method" onclick="selectPaymentMethod('crypto')">
+                            <i class="fab fa-bitcoin"></i>
+                            Crypto
+                        </div>
+                    </div>
+
+                    <div id="cardPayment">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-input" id="email" placeholder="your@email.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Card Number</label>
+                            <div class="card-element" id="cardNumber">
+                                <!-- Stripe Elements will be inserted here -->
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label class="form-label">Expiry Date</label>
+                                <div class="card-element" id="cardExpiry">
+                                    <!-- Stripe Elements will be inserted here -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">CVC</label>
+                                <div class="card-element" id="cardCvc">
+                                    <!-- Stripe Elements will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Cardholder Name</label>
+                            <input type="text" class="form-input" id="cardName" placeholder="John Doe" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Billing Address</label>
+                            <input type="text" class="form-input" id="billingAddress" placeholder="123 Main St, City, State 12345" required>
+                        </div>
+                    </div>
+
+                    <div id="paypalPayment" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">PayPal Email</label>
+                            <input type="email" class="form-input" id="paypalEmail" placeholder="your@email.com" required>
+                        </div>
+                        <button type="button" class="btn btn-primary" style="width: 100%; height: 60px;" onclick="processPayPal()">
+                            <i class="fab fa-paypal"></i>
+                            Pay with PayPal
+                        </button>
+                    </div>
+
+                    <div id="cryptoPayment" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Select Cryptocurrency</label>
+                            <select class="form-select" id="cryptoType">
+                                <option value="BTC">Bitcoin (BTC)</option>
+                                <option value="ETH">Ethereum (ETH)</option>
+                                <option value="USDT">Tether (USDT)</option>
+                                <option value="USDC">USD Coin (USDC)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Wallet Address</label>
+                            <input type="text" class="form-input" id="cryptoWallet" placeholder="0x..." required>
+                        </div>
+                        <button type="button" class="btn btn-primary" style="width: 100%; height: 60px;" onclick="processCrypto()">
+                            <i class="fab fa-bitcoin"></i>
+                            Pay with Crypto
+                        </button>
+                    </div>
+
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 60px; font-size: 18px;" id="submitPayment">
+                        <i class="fas fa-lock"></i>
+                        Complete Payment - <span id="submitAmount">$20.90</span>
+                    </button>
+                </form>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 50px; color: white;">
+            <p style="font-size: 18px; font-weight: 600;">
+                <i class="fas fa-shield-alt"></i> Secure Payment Processing by Stripe
+            </p>
+            <p style="margin-top: 10px; font-size: 14px;">
+                Your payment information is encrypted and secure. We never store your card details.
+            </p>
+        </footer>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="success-message">
+        <i class="fas fa-check-circle"></i>
+        <span id="successText">Success!</span>
+    </div>
+
+    <script>
+        // Initialize Stripe (you'll need to replace with your actual publishable key)
+        const stripe = Stripe('pk_test_51234567890abcdef'); // Replace with your key
+        
+        // Plan data
+        const plans = {
+            'starter': { name: 'Starter', price: 9.00 },
+            'professional': { name: 'Professional', price: 19.00 },
+            'enterprise': { name: 'Enterprise', price: 39.00 }
+        };
+
+        let selectedPlan = 'professional';
+        let selectedPaymentMethod = 'card';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateOrderSummary();
+            initializeStripeElements();
+        });
+
+        // Plan selection
+        function selectPlan(plan) {
+            selectedPlan = plan;
+            updateOrderSummary();
+            showSuccess(`${plans[plan].name} plan selected!`);
+            
+            // Update UI to show selected plan
+            document.querySelectorAll('.pricing-card').forEach(card => {
+                card.classList.remove('featured');
+            });
+            event.currentTarget.classList.add('featured');
+        }
+
+        // Payment method selection
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            
+            // Update UI
+            document.querySelectorAll('.payment-method').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Show/hide payment forms
+            document.getElementById('cardPayment').style.display = method === 'card' ? 'block' : 'none';
+            document.getElementById('paypalPayment').style.display = method === 'paypal' ? 'block' : 'none';
+            document.getElementById('cryptoPayment').style.display = method === 'crypto' ? 'block' : 'none';
+            
+            // Update submit button
+            const submitBtn = document.getElementById('submitPayment');
+            if (method === 'card') {
+                submitBtn.style.display = 'block';
+            } else {
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        // Update order summary
+        function updateOrderSummary() {
+            const plan = plans[selectedPlan];
+            const tax = plan.price * 0.1; // 10% tax
+            const total = plan.price + tax;
+            
+            document.getElementById('selectedPlan').textContent = plan.name;
+            document.getElementById('planPrice').textContent = `$${plan.price.toFixed(2)}`;
+            document.getElementById('totalPrice').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('submitAmount').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Initialize Stripe Elements
+        function initializeStripeElements() {
+            const elements = stripe.elements({
+                fonts: [{
+                    cssSrc: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700'
+                }]
+            });
+
+            // Card Number
+            const cardNumber = elements.create('cardNumber', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#1a202c',
+                        '::placeholder': {
+                            color: '#718096'
+                        }
+                    }
+                }
+            });
+            cardNumber.mount('#cardNumber');
+
+            // Card Expiry
+            const cardExpiry = elements.create('cardExpiry', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#1a202c',
+                        '::placeholder': {
+                            color: '#718096'
+                        }
+                    }
+                }
+            });
+            cardExpiry.mount('#cardExpiry');
+
+            // Card CVC
+            const cardCvc = elements.create('cardCvc', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#1a202c',
+                        '::placeholder': {
+                            color: '#718096'
+                        }
+                    }
+                }
+            });
+            cardCvc.mount('#cardCvc');
+        }
+
+        // Payment form submission
+        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (selectedPaymentMethod !== 'card') return;
+            
+            const submitBtn = document.getElementById('submitPayment');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            // Show loading
+            submitBtn.disabled = true;
+            loadingSpinner.classList.add('show');
+            
+            try {
+                // Create payment method
+                const { error, paymentMethod } = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: cardNumber,
+                    billing_details: {
+                        name: document.getElementById('cardName').value,
+                        email: document.getElementById('email').value,
+                        address: {
+                            line1: document.getElementById('billingAddress').value
+                        }
+                    }
+                });
+
+                if (error) {
+                    throw error;
+                }
+
+                // Create payment intent (you'll need to implement this server-side)
+                const response = await fetch('/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        paymentMethodId: paymentMethod.id,
+                        plan: selectedPlan,
+                        amount: plans[selectedPlan].price * 100 // Convert to cents
+                    })
+                });
+
+                const paymentResult = await response.json();
+
+                if (paymentResult.error) {
+                    throw paymentResult.error;
+                }
+
+                // Handle successful payment
+                showSuccess('Payment successful! 🎉 Welcome to SocialFlow Pro!');
+                
+                // Redirect to success page or dashboard
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Payment error:', error);
+                showSuccess('Payment failed. Please try again.');
+            } finally {
+                // Hide loading
+                submitBtn.disabled = false;
+                loadingSpinner.classList.remove('show');
+            }
+        });
+
+        // PayPal processing
+        function processPayPal() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            loadingSpinner.classList.add('show');
+            
+            // Simulate PayPal redirect
+            setTimeout(() => {
+                showSuccess('Redirecting to PayPal...');
+                // In real implementation, redirect to PayPal
+                window.location.href = 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=your@email.com';
+            }, 1000);
+        }
+
+        // Crypto processing
+        function processCrypto() {
+            const cryptoType = document.getElementById('cryptoType').value;
+            const wallet = document.getElementById('cryptoWallet').value;
+            
+            if (!wallet) {
+                showSuccess('Please enter your wallet address');
+                return;
+            }
+            
+            showSuccess(`Processing ${cryptoType} payment to ${wallet}...`);
+            
+            // In real implementation, create crypto payment request
+            setTimeout(() => {
+                showSuccess('Crypto payment initiated! Please complete the transaction.');
+            }, 2000);
+        }
+
+        // Success message
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            successText.textContent = message;
+            successDiv.classList.add('show');
+            
+            setTimeout(() => {
+                successDiv.classList.remove('show');
+            }, 3000);
+        }
+
+        // Navigation functions
+        function goBack() {
+            showSuccess('Returning to main app...');
+            setTimeout(() => {
+                window.location.href = 'socialflow-pro-enhanced.html';
+            }, 1000);
+        }
+
+        function showSupport() {
+            showSuccess('Opening support chat...');
+            // In real implementation, open support widget or redirect to support page
+        }
+
+        // Form validation
+        document.getElementById('email').addEventListener('input', function(e) {
+            const email = e.target.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (emailRegex.test(email)) {
+                e.target.style.borderColor = 'var(--success)';
+            } else {
+                e.target.style.borderColor = 'var(--border)';
+            }
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                goBack();
+            }
+            
+            if (e.ctrlKey && e.key === 'Enter') {
+                document.getElementById('paymentForm').requestSubmit();
+            }
+        });
+    </script>
+</body>
+</html>

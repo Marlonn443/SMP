@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialFlow Pro - Social Media Scheduler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 32px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Main Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .social-accounts {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .social-account {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            background: var(--light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .social-account:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .social-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .facebook { background: #1877f2; color: white; }
+        .twitter { background: #1da1f2; color: white; }
+        .instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; }
+        .linkedin { background: #0077b5; color: white; }
+        .tiktok { background: #000000; color: white; }
+
+        /* Calendar */
+        .calendar-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .calendar-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 15px 8px;
+            min-height: 80px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day:hover {
+            background: var(--light);
+            transform: scale(1.02);
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .calendar-day-posts {
+            font-size: 10px;
+            color: var(--gray);
+        }
+
+        .calendar-day.today {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calendar-day.today .calendar-day-number {
+            color: white;
+        }
+
+        /* Content Queue */
+        .content-queue {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .queue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .queue-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .post-item {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .post-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .post-platforms {
+            display: flex;
+            gap: 8px;
+        }
+
+        .platform-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .post-content {
+            font-size: 14px;
+            color: var(--dark);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .post-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .edit-btn {
+            background: var(--warning);
+            color: white;
+        }
+
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+
+        .schedule-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        /* Analytics Dashboard */
+        .analytics-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .analytics-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        /* Pricing */
+        .pricing-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .pricing-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .pricing-subtitle {
+            font-size: 18px;
+            color: var(--gray);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .pricing-card {
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: var(--shadow);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .plan-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .plan-price {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .plan-price span {
+            font-size: 16px;
+            color: var(--gray);
+            font-weight: 400;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .plan-features li {
+            padding: 8px 0;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-features i {
+            color: var(--success);
+            font-size: 14px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+            padding: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                order: 2;
+            }
+
+            .calendar-section {
+                order: 1;
+            }
+
+            .content-queue {
+                order: 3;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-calendar-alt"></i>
+                <span>SocialFlow Pro</span>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-outline" onclick="showLoginModal()">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
+                </button>
+                <button class="btn btn-primary" onclick="showSignupModal()">
+                    <i class="fas fa-rocket"></i>
+                    Start Free Trial
+                </button>
+            </div>
+        </header>
+
+        <!-- Analytics Dashboard -->
+        <section class="analytics-section">
+            <div class="analytics-header">
+                <h2 class="analytics-title">📊 Your Analytics</h2>
+                <select class="form-select" style="width: auto;">
+                    <option>Last 7 days</option>
+                    <option>Last 30 days</option>
+                    <option>Last 90 days</option>
+                </select>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-label">Total Posts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">89.2K</div>
+                    <div class="stat-label">Total Reach</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12.4K</div>
+                    <div class="stat-label">Engagement</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">+34%</div>
+                    <div class="stat-label">Growth Rate</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">🔗 Connected Accounts</h3>
+                    <div class="social-accounts">
+                        <div class="social-account">
+                            <div class="social-icon facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">Facebook</div>
+                                <div style="font-size: 12px; color: var(--gray);">Business Page</div>
+                            </div>
+                        </div>
+                        <div class="social-account">
+                            <div class="social-icon twitter">
+                                <i class="fab fa-twitter"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">Twitter</div>
+                                <div style="font-size: 12px; color: var(--gray);">@yourbrand</div>
+                            </div>
+                        </div>
+                        <div class="social-account">
+                            <div class="social-icon instagram">
+                                <i class="fab fa-instagram"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">Instagram</div>
+                                <div style="font-size: 12px; color: var(--gray);">@yourbrand</div>
+                            </div>
+                        </div>
+                        <div class="social-account">
+                            <div class="social-icon linkedin">
+                                <i class="fab fa-linkedin-in"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">LinkedIn</div>
+                                <div style="font-size: 12px; color: var(--gray);">Company Page</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-section">
+                    <button class="btn btn-primary" style="width: 100%;" onclick="showConnectModal()">
+                        <i class="fas fa-plus"></i>
+                        Add Account
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Calendar -->
+            <section class="calendar-section">
+                <div class="calendar-header">
+                    <h2 class="calendar-title">📅 Content Calendar</h2>
+                    <div class="calendar-nav">
+                        <button class="btn btn-outline" onclick="previousMonth()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn btn-outline" onclick="nextMonth()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendar">
+                    <!-- Calendar days will be generated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Content Queue -->
+            <section class="content-queue">
+                <div class="queue-header">
+                    <h3 class="queue-title">📝 Scheduled Posts</h3>
+                    <button class="btn btn-primary" onclick="showPostModal()">
+                        <i class="fas fa-plus"></i>
+                        New Post
+                    </button>
+                </div>
+                <div id="postQueue">
+                    <div class="post-item">
+                        <div class="post-header">
+                            <div class="post-platforms">
+                                <span class="platform-badge facebook">FB</span>
+                                <span class="platform-badge twitter">TW</span>
+                            </div>
+                            <div class="post-time">Today, 2:00 PM</div>
+                        </div>
+                        <div class="post-content">
+                            🚀 Exciting news! We're launching our new feature that will revolutionize your social media management. Stay tuned for updates! #innovation #socialmedia
+                        </div>
+                        <div class="post-actions">
+                            <button class="post-btn edit-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="post-btn schedule-btn">
+                                <i class="fas fa-clock"></i> Reschedule
+                            </button>
+                            <button class="post-btn delete-btn">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                    <div class="post-item">
+                        <div class="post-header">
+                            <div class="post-platforms">
+                                <span class="platform-badge instagram">IG</span>
+                            </div>
+                            <div class="post-time">Tomorrow, 10:00 AM</div>
+                        </div>
+                        <div class="post-content">
+                            💡 Pro tip: Consistent posting schedule increases engagement by 45%! What's your optimal posting time? #socialmediatips #marketing
+                        </div>
+                        <div class="post-actions">
+                            <button class="post-btn edit-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="post-btn schedule-btn">
+                                <i class="fas fa-clock"></i> Reschedule
+                            </button>
+                            <button class="post-btn delete-btn">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Pricing Section -->
+        <section class="pricing-section">
+            <div class="pricing-header">
+                <h2 class="pricing-title">💰 Choose Your Plan</h2>
+                <p class="pricing-subtitle">Start free, upgrade when you're ready</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3 class="plan-name">Starter</h3>
+                    <div class="plan-price">$9<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> 3 Social Accounts</li>
+                        <li><i class="fas fa-check"></i> 50 Posts/month</li>
+                        <li><i class="fas fa-check"></i> Basic Analytics</li>
+                        <li><i class="fas fa-check"></i> Email Support</li>
+                    </ul>
+                    <button class="btn btn-outline" style="width: 100%;">Get Started</button>
+                </div>
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">MOST POPULAR</div>
+                    <h3 class="plan-name">Professional</h3>
+                    <div class="plan-price">$19<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> 10 Social Accounts</li>
+                        <li><i class="fas fa-check"></i> 500 Posts/month</li>
+                        <li><i class="fas fa-check"></i> Advanced Analytics</li>
+                        <li><i class="fas fa-check"></i> AI Content Suggestions</li>
+                        <li><i class="fas fa-check"></i> Priority Support</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;">Start Free Trial</button>
+                </div>
+                <div class="pricing-card">
+                    <h3 class="plan-name">Enterprise</h3>
+                    <div class="plan-price">$39<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Unlimited Accounts</li>
+                        <li><i class="fas fa-check"></i> Unlimited Posts</li>
+                        <li><i class="fas fa-check"></i> Custom Analytics</li>
+                        <li><i class="fas fa-check"></i> AI Content Generation</li>
+                        <li><i class="fas fa-check"></i> API Access</li>
+                        <li><i class="fas fa-check"></i> Phone Support</li>
+                    </ul>
+                    <button class="btn btn-outline" style="width: 100%;">Contact Sales</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 40px; color: white;">
+            <p>&copy; 2024 SocialFlow Pro. Built for social media success 🚀</p>
+        </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back!</h2>
+                <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="••••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Start Your Free Trial</h2>
+                <button class="modal-close" onclick="closeModal('signupModal')">&times;</button>
+            </div>
+            <form onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="••••••••••" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Company (Optional)</label>
+                    <input type="text" class="form-input" placeholder="Your Company">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-rocket"></i>
+                    Start Free Trial
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Post Modal -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Create New Post</h2>
+                <button class="modal-close" onclick="closeModal('postModal')">&times;</button>
+            </div>
+            <form onsubmit="handleNewPost(event)">
+                <div class="form-group">
+                    <label class="form-label">Select Platforms</label>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" checked> Facebook
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" checked> Twitter
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox"> Instagram
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox"> LinkedIn
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Post Content</label>
+                    <textarea class="form-textarea" placeholder="What's on your mind? 🤔" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Schedule Date & Time</label>
+                    <input type="datetime-local" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Add Media (Optional)</label>
+                    <input type="file" class="form-input" accept="image/*,video/*">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-calendar-plus"></i>
+                    Schedule Post
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Connect Account Modal -->
+    <div id="connectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Connect Social Account</h2>
+                <button class="modal-close" onclick="closeModal('connectModal')">&times;</button>
+            </div>
+            <div style="display: grid; gap: 15px;">
+                <button class="btn" style="background: #1877f2; color: white; width: 100%;" onclick="connectAccount('facebook')">
+                    <i class="fab fa-facebook-f"></i>
+                    Connect Facebook
+                </button>
+                <button class="btn" style="background: #1da1f2; color: white; width: 100%;" onclick="connectAccount('twitter')">
+                    <i class="fab fa-twitter"></i>
+                    Connect Twitter
+                </button>
+                <button class="btn" style="background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; width: 100%;" onclick="connectAccount('instagram')">
+                    <i class="fab fa-instagram"></i>
+                    Connect Instagram
+                </button>
+                <button class="btn" style="background: #0077b5; color: white; width: 100%;" onclick="connectAccount('linkedin')">
+                    <i class="fab fa-linkedin-in"></i>
+                    Connect LinkedIn
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Calendar functionality
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        function generateCalendar() {
+            const calendar = document.getElementById('calendar');
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const today = new Date();
+            
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            document.querySelector('.calendar-title').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            
+            let html = '';
+            
+            // Day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                html += `<div style="background: var(--primary); color: white; padding: 10px; text-align: center; font-weight: 600;">${day}</div>`;
+            });
+            
+            // Empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div></div>';
+            }
+            
+            // Days of month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isToday = today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+                const hasPosts = Math.random() > 0.7; // Simulate posts
+                
+                html += `
+                    <div class="calendar-day ${isToday ? 'today' : ''}" onclick="selectDate(${day})">
+                        <div class="calendar-day-number">${day}</div>
+                        ${hasPosts ? '<div class="calendar-day-posts">📝</div>' : ''}
+                    </div>
+                `;
+            }
+            
+            calendar.innerHTML = html;
+        }
+
+        function previousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar();
+        }
+
+        function selectDate(day) {
+            alert(`Selected date: ${day}/${currentMonth + 1}/${currentYear}`);
+        }
+
+        // Modal functions
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function showSignupModal() {
+            document.getElementById('signupModal').classList.add('active');
+        }
+
+        function showPostModal() {
+            document.getElementById('postModal').classList.add('active');
+        }
+
+        function showConnectModal() {
+            document.getElementById('connectModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Form handlers
+        function handleLogin(event) {
+            event.preventDefault();
+            alert('Login functionality would connect to backend');
+            closeModal('loginModal');
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            alert('Signup would create account and start free trial');
+            closeModal('signupModal');
+        }
+
+        function handleNewPost(event) {
+            event.preventDefault();
+            alert('Post would be scheduled and added to queue');
+            closeModal('postModal');
+            // Add new post to queue
+            addNewPostToQueue();
+        }
+
+        function connectAccount(platform) {
+            alert(`Connecting to ${platform}... This would open OAuth flow`);
+            closeModal('connectModal');
+        }
+
+        function addNewPostToQueue() {
+            const queue = document.getElementById('postQueue');
+            const newPost = document.createElement('div');
+            newPost.className = 'post-item';
+            newPost.innerHTML = `
+                <div class="post-header">
+                    <div class="post-platforms">
+                        <span class="platform-badge facebook">FB</span>
+                        <span class="platform-badge twitter">TW</span>
+                    </div>
+                    <div class="post-time">Just now</div>
+                </div>
+                <div class="post-content">
+                    🆕 Your new post has been scheduled successfully!
+                </div>
+                <div class="post-actions">
+                    <button class="post-btn edit-btn">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="post-btn schedule-btn">
+                        <i class="fas fa-clock"></i> Reschedule
+                    </button>
+                    <button class="post-btn delete-btn">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            `;
+            queue.insertBefore(newPost, queue.firstChild);
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // Initialize calendar on load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateCalendar();
+        });
+    </script>
+</body>
+</html>
